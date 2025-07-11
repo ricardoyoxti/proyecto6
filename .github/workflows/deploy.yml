@@ -2,6 +2,37 @@
 name: 🚀 Deploy Odoo 18 to Google Cloud
 
 on:
+  workflow_dispatch:
+    inputs:
+      instance_name:
+        description: 'Nombre base de la instancia (se añadirá timestamp único)'
+        required: false
+        default: 'odoo'
+      machine_type:
+        description: 'Tipo de máquina'
+        required: true
+        default: 'e2-small'
+        type: choice
+        options:
+        - 'e2-micro'
+        - 'e2-small'
+        - 'e2-medium'
+        - 'e2-standard-2'
+        - 'e2-standard-4'
+      zone:
+        description: 'Zona de GCP'
+        required: true
+        default: 'us-central1-a'
+        type: choice
+        options:
+        - 'southamerica-west1-a'
+        - 'us-central1-a'
+      disk_size:
+        description: 'Tamaño del disco (GB)'
+        required: true
+        default: '20'
+
+
   repository_dispatch:
     types: [deploy-odoo]
 
@@ -46,8 +77,8 @@ jobs:
     - name: 🖥️ Create VM Instance
       run: |
         INSTANCE_NAME="${{ steps.generate_name.outputs.INSTANCE_NAME }}"
-        MACHINE_TYPE="${{ github.event.client_payload.machine_type || 'e2-medium' }}"
-        ZONE="${{ github.event.client_payload.zone || 'southamerica-west1-a' }}"
+        MACHINE_TYPE="${{ github.event.client_payload.machine_type || 'e2-small' }}"
+        ZONE="${{ github.event.client_payload.zone || 'us-central1-a' }}"
         DISK_SIZE="${{ github.event.client_payload.disk_size || '20' }}"
         
         echo "🏗️ Creando instancia: $INSTANCE_NAME"
